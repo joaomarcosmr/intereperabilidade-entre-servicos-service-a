@@ -1,4 +1,39 @@
 package com.challenge.geosapiens.service_a.infrastructure.usecase.order;
 
-public class UpdateOrderUseCaseImpl {
+import com.challenge.geosapiens.service_a.domain.entity.Order;
+import com.challenge.geosapiens.service_a.domain.repository.OrderRepository;
+import com.challenge.geosapiens.service_a.domain.producer.OrderSyncProducer;
+import com.challenge.geosapiens.service_a.domain.usecase.order.UpdateOrderUseCase;
+import com.challenge.geosapiens.service_a.infrastructure.dto.request.OrderRequest;
+import com.challenge.geosapiens.service_a.infrastructure.dto.response.OrderResponse;
+import com.challenge.geosapiens.service_a.infrastructure.mapper.OrderMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
+
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
+    private final OrderSyncProducer orderSyncProducer;
+
+    @Override
+    @Transactional
+    public OrderResponse execute(OrderRequest orderRequest, Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+
+        order.setDescription(orderRequest.getDescription());
+        order.setUserId(orderRequest.getUserId());
+        order.setDeliveryPersonId(orderRequest.getDeliveryPersonId());
+
+        Order updatedOrder = orderRepository.save(order);
+
+        orderSyncProducer.syncUpdated(updatedOrder);
+
+        return orderMapper.domainToResponse(updatedOrder);
+    }
+
 }
