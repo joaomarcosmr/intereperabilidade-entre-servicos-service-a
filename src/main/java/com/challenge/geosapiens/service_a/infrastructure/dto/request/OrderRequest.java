@@ -11,11 +11,15 @@ public class OrderRequest {
     @NotBlank(message = "Descrição é obrigatória")
     private String description;
 
+    @NotNull(message = "Valor do pedido é obrigatório")
+    @Positive(message = "O valor não pode ser negativo")
+    private Double value;
+
     @NotNull(message = "ID do usuário é obrigatório")
     @Positive(message = "ID do usuário inválido")
-    private Integer userId;
+    private Long userId;
 
     @NotNull(message = "ID do entregador é obrigatório")
     @Positive(message = "ID do usuário inválido")
-    private Integer deliveryPersonId;
+    private Long deliveryPersonId;
 }
