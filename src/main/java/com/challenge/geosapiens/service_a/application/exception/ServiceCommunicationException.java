@@ -1,4 +1,4 @@
-package com.challenge.geosapiens.service_a.domain.exception;
+package com.challenge.geosapiens.service_a.application.exception;
 
 public class ServiceCommunicationException extends RuntimeException {
 

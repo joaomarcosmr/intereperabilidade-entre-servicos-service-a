@@ -1,7 +1,7 @@
 package com.challenge.geosapiens.service_a.infrastructure.producer;
 
 import com.challenge.geosapiens.service_a.domain.entity.DeliveryPerson;
-import com.challenge.geosapiens.service_a.domain.exception.ServiceCommunicationException;
+import com.challenge.geosapiens.service_a.application.exception.ServiceCommunicationException;
 import com.challenge.geosapiens.service_a.domain.producer.DeliveryPersonSyncProducer;
 import com.challenge.geosapiens.service_a.application.config.RabbitMQConfig;
 import com.challenge.geosapiens.service_a.infrastructure.dto.response.DeliveryPersonResponse;
