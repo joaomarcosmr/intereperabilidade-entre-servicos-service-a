@@ -11,7 +11,7 @@ import lombok.Data;
 public class DeliveryPerson {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Long id;
     private String name;
     private String email;
 }

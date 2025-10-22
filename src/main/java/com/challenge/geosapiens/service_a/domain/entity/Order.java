@@ -11,7 +11,7 @@ import lombok.Data;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Long id;
     private String description;
     private Integer userId;
     private Integer deliveryPersonId;

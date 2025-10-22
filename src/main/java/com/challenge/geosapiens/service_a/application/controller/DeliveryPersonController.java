@@ -1,0 +1,59 @@
+package com.challenge.geosapiens.service_a.application.controller;
+
+import com.challenge.geosapiens.service_a.domain.usecase.deliveryPerson.DeleteDeliveryPersonUseCase;
+import com.challenge.geosapiens.service_a.domain.usecase.deliveryPerson.SaveDeliveryPersonUseCase;
+import com.challenge.geosapiens.service_a.domain.usecase.deliveryPerson.UpdateDeliveryPersonUseCase;
+import com.challenge.geosapiens.service_a.infrastructure.dto.request.DeliveryPersonRequest;
+import com.challenge.geosapiens.service_a.infrastructure.dto.response.DeliveryPersonResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+@RestController("/delivery-person")
+@RequiredArgsConstructor
+public class DeliveryPersonController {
+
+    private final SaveDeliveryPersonUseCase saveDeliveryPersonUseCase;
+    private final UpdateDeliveryPersonUseCase updateDeliveryPersonUseCase;
+    private final DeleteDeliveryPersonUseCase deleteDeliveryPersonUseCase;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    private ResponseEntity<DeliveryPersonResponse> save(@Valid @RequestBody DeliveryPersonRequest deliveryPersonRequest) {
+        try {
+            DeliveryPersonResponse execute = saveDeliveryPersonUseCase.execute(deliveryPersonRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(execute);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    private ResponseEntity<DeliveryPersonResponse> update(
+            @Valid @RequestBody DeliveryPersonRequest deliveryPersonRequest,
+            @RequestParam(name = "deliveryPersonId", required = true) Long id
+    ) {
+        try {
+            DeliveryPersonResponse execute = updateDeliveryPersonUseCase.execute(deliveryPersonRequest, id);
+            return ResponseEntity.status(HttpStatus.OK).body(execute);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    private ResponseEntity<Void> delete(@RequestParam(name = "deliveryPersonId", required = true) Long id) {
+        try {
+            deleteDeliveryPersonUseCase.execute(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+}
