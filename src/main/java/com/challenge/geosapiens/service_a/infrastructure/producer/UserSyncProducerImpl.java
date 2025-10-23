@@ -1,12 +1,11 @@
 package com.challenge.geosapiens.service_a.infrastructure.producer;
 
 import com.challenge.geosapiens.service_a.domain.entity.User;
-import com.challenge.geosapiens.service_a.application.exception.ServiceCommunicationException;
 import com.challenge.geosapiens.service_a.domain.producer.UserSyncProducer;
 import com.challenge.geosapiens.service_a.application.config.RabbitMQConfig;
 import com.challenge.geosapiens.service_a.infrastructure.dto.response.UserResponse;
 import com.challenge.geosapiens.service_a.infrastructure.mapper.UserMapper;
-import com.challenge.geosapiens.service_a.application.helper.RequestCounterHelper;
+import com.challenge.geosapiens.service_a.application.util.RequestCounterHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

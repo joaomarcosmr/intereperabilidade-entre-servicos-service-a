@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
@@ -22,7 +24,7 @@ public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
 
     @Override
     @Transactional
-    public OrderResponse execute(OrderRequest orderRequest, Long id) {
+    public OrderResponse execute(OrderRequest orderRequest, UUID id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order not found with id: " + id));
 

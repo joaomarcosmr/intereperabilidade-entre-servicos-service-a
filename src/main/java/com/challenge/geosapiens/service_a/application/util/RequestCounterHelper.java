@@ -1,4 +1,4 @@
-package com.challenge.geosapiens.service_a.application.helper;
+package com.challenge.geosapiens.service_a.application.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

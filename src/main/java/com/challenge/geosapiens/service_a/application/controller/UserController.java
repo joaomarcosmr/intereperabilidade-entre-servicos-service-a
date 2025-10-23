@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     private ResponseEntity<UserResponse> update(
             @Valid @RequestBody UserRequest userRequest,
-            @RequestParam(name = "userId", required = true) Long id
+            @RequestParam(name = "userId", required = true) UUID id
     ) {
         UserResponse execute = updateUserUseCase.execute(userRequest, id);
         return ResponseEntity.status(HttpStatus.CREATED).body(execute);
@@ -40,7 +42,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    private ResponseEntity<UserResponse> delete(@RequestParam(name = "userId", required = true) Long id) {
+    private ResponseEntity<UserResponse> delete(@RequestParam(name = "userId", required = true) UUID id) {
         deleteUserUseCase.execute(id);
         return ResponseEntity.status(HttpStatusCode.valueOf(203)).body(null);
     }

@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UpdateUserUseCaseImpl implements UpdateUserUseCase {
@@ -22,7 +24,7 @@ public class UpdateUserUseCaseImpl implements UpdateUserUseCase {
 
     @Override
     @Transactional
-    public UserResponse execute(UserRequest userRequest, Long id) {
+    public UserResponse execute(UserRequest userRequest, UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 

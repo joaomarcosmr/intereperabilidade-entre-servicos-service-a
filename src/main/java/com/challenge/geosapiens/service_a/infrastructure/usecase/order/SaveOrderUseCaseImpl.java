@@ -1,5 +1,6 @@
 package com.challenge.geosapiens.service_a.infrastructure.usecase.order;
 
+import com.challenge.geosapiens.service_a.application.exception.NotFoundException;
 import com.challenge.geosapiens.service_a.domain.entity.Order;
 import com.challenge.geosapiens.service_a.domain.repository.OrderRepository;
 import com.challenge.geosapiens.service_a.domain.producer.OrderSyncProducer;

@@ -5,9 +5,11 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class OrderResponse {
+public class OrderWithDeliveryResponse {
     private UUID id;
     private String description;
+    private Double value;
     private UUID userId;
-    private UUID deliveryPersonId;
+    private DeliveryPersonResponse deliveryPerson;
+    private UserResponse user;
 }

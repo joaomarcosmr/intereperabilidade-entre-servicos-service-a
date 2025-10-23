@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class DeleteOrderUseCaseImpl implements DeleteOrderUseCase {
@@ -17,7 +19,7 @@ public class DeleteOrderUseCaseImpl implements DeleteOrderUseCase {
 
     @Override
     @Transactional
-    public void execute(Long id) {
+    public void execute(UUID id) {
         if (!orderRepository.existsById(id)) {
             throw new NotFoundException("Order not found with id: " + id);
         }

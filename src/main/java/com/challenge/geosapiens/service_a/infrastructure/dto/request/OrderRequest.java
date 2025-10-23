@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class OrderRequest {
 
@@ -16,10 +18,8 @@ public class OrderRequest {
     private Double value;
 
     @NotNull(message = "ID do usuário é obrigatório")
-    @Positive(message = "ID do usuário inválido")
-    private Long userId;
+    private UUID userId;
 
     @NotNull(message = "ID do entregador é obrigatório")
-    @Positive(message = "ID do usuário inválido")
-    private Long deliveryPersonId;
+    private UUID deliveryPersonId;
 }

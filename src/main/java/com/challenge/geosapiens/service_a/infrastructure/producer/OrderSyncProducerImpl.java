@@ -1,19 +1,19 @@
 package com.challenge.geosapiens.service_a.infrastructure.producer;
 
 import com.challenge.geosapiens.service_a.domain.entity.Order;
-import com.challenge.geosapiens.service_a.application.exception.ServiceCommunicationException;
 import com.challenge.geosapiens.service_a.domain.producer.OrderSyncProducer;
 import com.challenge.geosapiens.service_a.application.config.RabbitMQConfig;
-import com.challenge.geosapiens.service_a.infrastructure.dto.response.OrderResponse;
+import com.challenge.geosapiens.service_a.infrastructure.dto.response.OrderWithDeliveryResponse;
 import com.challenge.geosapiens.service_a.infrastructure.mapper.OrderMapper;
-import com.challenge.geosapiens.service_a.application.helper.RequestCounterHelper;
+import com.challenge.geosapiens.service_a.application.util.RequestCounterHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.support.ListenerExecutionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class OrderSyncProducerImpl implements OrderSyncProducer {
 
         try {
             log.info("Publishing order {} (CREATE) to RabbitMQ", order.getId());
-            OrderResponse response = orderMapper.domainToResponse(order);
+            OrderWithDeliveryResponse response = orderMapper.domainToWithDeliveryResponse(order);
             rabbitTemplate.convertAndSend(
                     RabbitMQConfig.ORDER_EXCHANGE,
                     RabbitMQConfig.ORDER_CREATE_ROUTING_KEY,
@@ -50,7 +50,7 @@ public class OrderSyncProducerImpl implements OrderSyncProducer {
     public void syncUpdated(Order order) {
         try {
             log.info("Publishing order {} (UPDATE) to RabbitMQ", order.getId());
-            OrderResponse response = orderMapper.domainToResponse(order);
+            OrderWithDeliveryResponse response = orderMapper.domainToWithDeliveryResponse(order);
             rabbitTemplate.convertAndSend(
                     RabbitMQConfig.ORDER_EXCHANGE,
                     RabbitMQConfig.ORDER_UPDATE_ROUTING_KEY,
@@ -63,7 +63,7 @@ public class OrderSyncProducerImpl implements OrderSyncProducer {
     }
 
     @Override
-    public void syncDeleted(Long orderId) {
+    public void syncDeleted(UUID orderId) {
         try {
             log.info("Publishing order {} (DELETE) to RabbitMQ", orderId);
             rabbitTemplate.convertAndSend(
