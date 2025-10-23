@@ -1,5 +1,6 @@
 package com.challenge.geosapiens.service_a.infrastructure.usecase.user;
 
+import com.challenge.geosapiens.service_a.application.exception.NotFoundException;
 import com.challenge.geosapiens.service_a.domain.entity.User;
 import com.challenge.geosapiens.service_a.domain.repository.UserRepository;
 import com.challenge.geosapiens.service_a.domain.producer.UserSyncProducer;
@@ -23,7 +24,7 @@ public class UpdateUserUseCaseImpl implements UpdateUserUseCase {
     @Transactional
     public UserResponse execute(UserRequest userRequest, Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());

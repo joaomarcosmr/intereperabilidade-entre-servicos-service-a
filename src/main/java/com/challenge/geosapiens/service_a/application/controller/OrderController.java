@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-@RestController("/order")
+@RestController
+@RequestMapping("/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
@@ -23,12 +23,8 @@ public class OrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     private ResponseEntity<OrderResponse> save(@Valid @RequestBody OrderRequest orderRequest) {
-        try {
-            OrderResponse execute = saveOrderUseCase.execute(orderRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(execute);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        OrderResponse execute = saveOrderUseCase.execute(orderRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(execute);
     }
 
     @PutMapping("/{id}")
@@ -37,22 +33,14 @@ public class OrderController {
             @Valid @RequestBody OrderRequest orderRequest,
             @RequestParam(name = "orderId", required = true) Long id
     ) {
-        try {
-            OrderResponse execute = updateOrderUseCase.execute(orderRequest, id);
-            return ResponseEntity.status(HttpStatus.OK).body(execute);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        OrderResponse execute = updateOrderUseCase.execute(orderRequest, id);
+        return ResponseEntity.status(HttpStatus.OK).body(execute);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private ResponseEntity<Void> delete(@RequestParam(name = "orderId", required = true) Long id) {
-        try {
-            deleteOrderUseCase.execute(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        deleteOrderUseCase.execute(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 }

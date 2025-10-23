@@ -1,5 +1,6 @@
 package com.challenge.geosapiens.service_a.infrastructure.usecase.order;
 
+import com.challenge.geosapiens.service_a.application.exception.NotFoundException;
 import com.challenge.geosapiens.service_a.domain.repository.OrderRepository;
 import com.challenge.geosapiens.service_a.domain.producer.OrderSyncProducer;
 import com.challenge.geosapiens.service_a.domain.usecase.order.DeleteOrderUseCase;
@@ -18,7 +19,7 @@ public class DeleteOrderUseCaseImpl implements DeleteOrderUseCase {
     @Transactional
     public void execute(Long id) {
         if (!orderRepository.existsById(id)) {
-            throw new RuntimeException("Order not found with id: " + id);
+            throw new NotFoundException("Order not found with id: " + id);
         }
 
         orderRepository.deleteById(id);

@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-@RestController("/delivery-person")
+@RestController
+@RequestMapping("/delivery-persons")
 @RequiredArgsConstructor
 public class DeliveryPersonController {
 
@@ -23,12 +23,8 @@ public class DeliveryPersonController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     private ResponseEntity<DeliveryPersonResponse> save(@Valid @RequestBody DeliveryPersonRequest deliveryPersonRequest) {
-        try {
-            DeliveryPersonResponse execute = saveDeliveryPersonUseCase.execute(deliveryPersonRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(execute);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        DeliveryPersonResponse execute = saveDeliveryPersonUseCase.execute(deliveryPersonRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(execute);
     }
 
     @PutMapping("/{id}")
@@ -37,22 +33,14 @@ public class DeliveryPersonController {
             @Valid @RequestBody DeliveryPersonRequest deliveryPersonRequest,
             @RequestParam(name = "deliveryPersonId", required = true) Long id
     ) {
-        try {
-            DeliveryPersonResponse execute = updateDeliveryPersonUseCase.execute(deliveryPersonRequest, id);
-            return ResponseEntity.status(HttpStatus.OK).body(execute);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        DeliveryPersonResponse execute = updateDeliveryPersonUseCase.execute(deliveryPersonRequest, id);
+        return ResponseEntity.status(HttpStatus.OK).body(execute);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private ResponseEntity<Void> delete(@RequestParam(name = "deliveryPersonId", required = true) Long id) {
-        try {
-            deleteDeliveryPersonUseCase.execute(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        deleteDeliveryPersonUseCase.execute(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 }

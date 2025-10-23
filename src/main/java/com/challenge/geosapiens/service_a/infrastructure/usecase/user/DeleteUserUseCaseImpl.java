@@ -1,5 +1,6 @@
 package com.challenge.geosapiens.service_a.infrastructure.usecase.user;
 
+import com.challenge.geosapiens.service_a.application.exception.NotFoundException;
 import com.challenge.geosapiens.service_a.domain.repository.UserRepository;
 import com.challenge.geosapiens.service_a.domain.producer.UserSyncProducer;
 import com.challenge.geosapiens.service_a.domain.usecase.user.DeleteUserUseCase;
@@ -18,7 +19,7 @@ public class DeleteUserUseCaseImpl implements DeleteUserUseCase {
     @Transactional
     public void execute(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found with id: " + id);
+            throw new NotFoundException("User not found with id: " + id);
         }
 
         userRepository.deleteById(id);

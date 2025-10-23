@@ -1,5 +1,6 @@
 package com.challenge.geosapiens.service_a.infrastructure.usecase.order;
 
+import com.challenge.geosapiens.service_a.application.exception.NotFoundException;
 import com.challenge.geosapiens.service_a.domain.entity.Order;
 import com.challenge.geosapiens.service_a.domain.repository.OrderRepository;
 import com.challenge.geosapiens.service_a.domain.producer.OrderSyncProducer;
@@ -23,7 +24,7 @@ public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
     @Transactional
     public OrderResponse execute(OrderRequest orderRequest, Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Order not found with id: " + id));
 
         order.setDescription(orderRequest.getDescription());
         order.setUserId(orderRequest.getUserId());

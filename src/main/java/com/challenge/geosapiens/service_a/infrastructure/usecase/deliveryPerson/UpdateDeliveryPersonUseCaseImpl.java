@@ -1,5 +1,6 @@
 package com.challenge.geosapiens.service_a.infrastructure.usecase.deliveryPerson;
 
+import com.challenge.geosapiens.service_a.application.exception.NotFoundException;
 import com.challenge.geosapiens.service_a.domain.entity.DeliveryPerson;
 import com.challenge.geosapiens.service_a.domain.repository.DeliveryPersonRepository;
 import com.challenge.geosapiens.service_a.domain.producer.DeliveryPersonSyncProducer;
@@ -23,10 +24,10 @@ public class UpdateDeliveryPersonUseCaseImpl implements UpdateDeliveryPersonUseC
     @Transactional
     public DeliveryPersonResponse execute(DeliveryPersonRequest deliveryPersonRequest, Long id) {
         DeliveryPerson deliveryPerson = deliveryPersonRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("DeliveryPerson not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("DeliveryPerson not found with id: " + id));
 
         deliveryPerson.setName(deliveryPersonRequest.getName());
-        deliveryPerson.setEmail(deliveryPersonRequest.getEmail());
+        deliveryPerson.setPhone(deliveryPersonRequest.getPhone());
 
         DeliveryPerson updatedDeliveryPerson = deliveryPersonRepository.save(deliveryPerson);
 

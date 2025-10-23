@@ -11,9 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-@RestController("/user")
+@RestController
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -24,12 +24,8 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     private ResponseEntity<UserResponse> save(@Valid @RequestBody UserRequest userRequest) {
-        try {
-            UserResponse execute = saveUserUseCase.execute(userRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(execute);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
-        }
+        UserResponse execute = saveUserUseCase.execute(userRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(execute);
     }
 
     @PutMapping("/{id}")
@@ -38,22 +34,14 @@ public class UserController {
             @Valid @RequestBody UserRequest userRequest,
             @RequestParam(name = "userId", required = true) Long id
     ) {
-        try {
-            UserResponse execute = updateUserUseCase.execute(userRequest, id);
-            return ResponseEntity.status(HttpStatus.CREATED).body(execute);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
-        }
+        UserResponse execute = updateUserUseCase.execute(userRequest, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(execute);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     private ResponseEntity<UserResponse> delete(@RequestParam(name = "userId", required = true) Long id) {
-        try {
-            deleteUserUseCase.execute(id);
-            return ResponseEntity.status(HttpStatusCode.valueOf(203)).body(null);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
-        }
+        deleteUserUseCase.execute(id);
+        return ResponseEntity.status(HttpStatusCode.valueOf(203)).body(null);
     }
 }
