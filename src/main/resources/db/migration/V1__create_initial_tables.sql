@@ -1,4 +1,3 @@
--- Create users table
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255),
@@ -7,7 +6,6 @@ CREATE TABLE users (
     updated_at TIMESTAMP
 );
 
--- Create delivery_person table
 CREATE TABLE delivery_person (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255),
@@ -16,7 +14,6 @@ CREATE TABLE delivery_person (
     updated_at TIMESTAMP
 );
 
--- Create orders table
 CREATE TABLE orders (
     id BIGSERIAL PRIMARY KEY,
     description VARCHAR(255),

@@ -10,7 +10,9 @@ import com.challenge.geosapiens.service_a.application.helper.RequestCounterHelpe
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +28,7 @@ public class DeliveryPersonSyncProducerImpl implements DeliveryPersonSyncProduce
         if (requestCounterHelper.shouldFailDeliveryPersonCreate()) {
             log.error("Intentional failure triggered for deliveryPerson {} (CREATE) - Test case 5.1", deliveryPerson.getId());
             requestCounterHelper.resetCounters();
-            throw new ServiceCommunicationException(
-                    "Exceção intencional após 3 requisições bem-sucedidas - Teste de comunicação com Service B");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Exceção intencional");
         }
 
         try {
@@ -41,7 +42,6 @@ public class DeliveryPersonSyncProducerImpl implements DeliveryPersonSyncProduce
             log.info("DeliveryPerson {} successfully published (CREATE) to RabbitMQ", deliveryPerson.getId());
         } catch (Exception e) {
             log.error("Failed to publish deliveryPerson {} (CREATE) to RabbitMQ: {}", deliveryPerson.getId(), e.getMessage());
-            throw new ServiceCommunicationException("Falha ao publicar mensagem no RabbitMQ", e);
         }
     }
 

@@ -10,7 +10,10 @@ import com.challenge.geosapiens.service_a.application.helper.RequestCounterHelpe
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.ListenerExecutionFailedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +29,7 @@ public class OrderSyncProducerImpl implements OrderSyncProducer {
         if (requestCounterHelper.shouldFailOrderCreate()) {
             log.error("Intentional failure triggered for order {} (CREATE) - Test case 5.1", order.getId());
             requestCounterHelper.resetCounters();
-            throw new ServiceCommunicationException(
-                    "Exceção intencional após 3 requisições bem-sucedidas - Teste de comunicação com Service B");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Exceção intencional");
         }
 
         try {
@@ -41,7 +43,6 @@ public class OrderSyncProducerImpl implements OrderSyncProducer {
             log.info("Order {} successfully published (CREATE) to RabbitMQ", order.getId());
         } catch (Exception e) {
             log.error("Failed to publish order {} (CREATE) to RabbitMQ: {}", order.getId(), e.getMessage());
-            throw new ServiceCommunicationException("Falha ao publicar mensagem no RabbitMQ", e);
         }
     }
 
