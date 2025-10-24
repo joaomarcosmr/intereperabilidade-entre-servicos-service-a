@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.challenge.geosapiens</groupId>
 	<artifactId>service-a</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>service-a</name>
 	<description>Service A for GeoSapiens Challenge</description>
 	<url/>
