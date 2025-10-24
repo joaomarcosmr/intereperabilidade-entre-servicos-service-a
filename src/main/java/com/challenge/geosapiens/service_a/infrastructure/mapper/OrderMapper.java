@@ -10,6 +10,8 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {DeliveryPersonMapper.class, UserMapper.class})
 public interface OrderMapper {
+    @Mapping(target = "user.id", source = "userId")
+    @Mapping(target = "deliveryPerson.id", source = "deliveryPersonId")
     Order toDomain(OrderRequest orderRequest);
 
     @Mapping(source = "deliveryPerson.id", target = "deliveryPersonId")

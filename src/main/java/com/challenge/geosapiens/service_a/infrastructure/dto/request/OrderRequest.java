@@ -18,7 +18,7 @@ public class OrderRequest {
     private String description;
 
     @NotNull(message = "Valor do pedido é obrigatório")
-    @Positive(message = "O valor não pode ser negativo")
+    @Positive(message = "O valor não pode ser zero ou negativo")
     private Double value;
 
     @NotNull(message = "ID do usuário é obrigatório")
