@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -62,7 +64,7 @@ public class DeliveryPersonSyncProducerImpl implements DeliveryPersonSyncProduce
     }
 
     @Override
-    public void syncDeleted(Long deliveryPersonId) {
+    public void syncDeleted(UUID deliveryPersonId) {
         try {
             log.info("Publishing deliveryPerson {} (DELETE) to RabbitMQ", deliveryPersonId);
             rabbitTemplate.convertAndSend(

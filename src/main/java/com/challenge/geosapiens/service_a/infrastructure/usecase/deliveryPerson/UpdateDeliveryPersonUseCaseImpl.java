@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UpdateDeliveryPersonUseCaseImpl implements UpdateDeliveryPersonUseCase {
@@ -22,7 +24,7 @@ public class UpdateDeliveryPersonUseCaseImpl implements UpdateDeliveryPersonUseC
 
     @Override
     @Transactional
-    public DeliveryPersonResponse execute(DeliveryPersonRequest deliveryPersonRequest, Long id) {
+    public DeliveryPersonResponse execute(DeliveryPersonRequest deliveryPersonRequest, UUID id) {
         DeliveryPerson deliveryPerson = deliveryPersonRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("DeliveryPerson not found with id: " + id));
 

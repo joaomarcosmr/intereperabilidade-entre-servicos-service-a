@@ -33,8 +33,8 @@ public class OrderSyncProducerImpl implements OrderSyncProducer {
         }
 
         try {
-            log.info("Publishing order {} (CREATE) to RabbitMQ", order.getId());
             OrderWithDeliveryResponse response = orderMapper.domainToWithDeliveryResponse(order);
+
             rabbitTemplate.convertAndSend(
                     RabbitMQConfig.ORDER_EXCHANGE,
                     RabbitMQConfig.ORDER_CREATE_ROUTING_KEY,
@@ -42,7 +42,7 @@ public class OrderSyncProducerImpl implements OrderSyncProducer {
             );
             log.info("Order {} successfully published (CREATE) to RabbitMQ", order.getId());
         } catch (Exception e) {
-            log.error("Failed to publish order {} (CREATE) to RabbitMQ: {}", order.getId(), e.getMessage());
+            log.error("Failed to publish order {} (CREATE) to RabbitMQ: {}", order.getId(), e.getMessage(), e);
         }
     }
 

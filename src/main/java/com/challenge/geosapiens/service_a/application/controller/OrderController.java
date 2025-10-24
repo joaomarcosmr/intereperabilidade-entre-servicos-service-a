@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     private ResponseEntity<OrderResponse> update(
             @Valid @RequestBody OrderRequest orderRequest,
-            @RequestParam(name = "orderId", required = true) Long id
+            @RequestParam(name = "orderId", required = true) UUID id
     ) {
         OrderResponse execute = updateOrderUseCase.execute(orderRequest, id);
         return ResponseEntity.status(HttpStatus.OK).body(execute);
@@ -39,7 +41,7 @@ public class OrderController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    private ResponseEntity<Void> delete(@RequestParam(name = "orderId", required = true) Long id) {
+    private ResponseEntity<Void> delete(@RequestParam(name = "orderId", required = true) UUID id) {
         deleteOrderUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class DeleteDeliveryPersonUseCaseImpl implements DeleteDeliveryPersonUseCase {
@@ -17,7 +19,7 @@ public class DeleteDeliveryPersonUseCaseImpl implements DeleteDeliveryPersonUseC
 
     @Override
     @Transactional
-    public void execute(Long id) {
+    public void execute(UUID id) {
         if (!deliveryPersonRepository.existsById(id)) {
             throw new NotFoundException("DeliveryPerson not found with id: " + id);
         }

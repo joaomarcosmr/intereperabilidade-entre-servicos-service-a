@@ -15,10 +15,6 @@ public class Order {
     private UUID id;
     private String description;
     private Double value;
-    @Column(name = "user_id")
-    private UUID userId;
-    @Column(name = "delivery_person_id")
-    private UUID deliveryPersonId;
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -37,10 +33,10 @@ public class Order {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "delivery_person_id", insertable = false, updatable = false)
+    @JoinColumn(name = "delivery_person_id")
     private DeliveryPerson deliveryPerson;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 }

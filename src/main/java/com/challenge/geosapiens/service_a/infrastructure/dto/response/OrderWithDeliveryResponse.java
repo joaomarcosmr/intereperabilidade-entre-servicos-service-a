@@ -10,6 +10,6 @@ public class OrderWithDeliveryResponse {
     private String description;
     private Double value;
     private UUID userId;
-    private DeliveryPersonResponse deliveryPerson;
-    private UserResponse user;
+    private String deliveryPersonName;
+    private String deliveryPersonPhone;
 }
