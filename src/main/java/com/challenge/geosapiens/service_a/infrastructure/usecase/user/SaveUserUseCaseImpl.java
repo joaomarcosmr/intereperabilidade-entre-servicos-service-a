@@ -8,11 +8,13 @@ import com.challenge.geosapiens.service_a.infrastructure.dto.request.UserRequest
 import com.challenge.geosapiens.service_a.infrastructure.dto.response.UserResponse;
 import com.challenge.geosapiens.service_a.infrastructure.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SaveUserUseCaseImpl implements SaveUserUseCase {
 
     private final UserRepository userRepository;
@@ -22,7 +24,12 @@ public class SaveUserUseCaseImpl implements SaveUserUseCase {
     @Override
     @Transactional
     public UserResponse execute(UserRequest userRequest) {
-        User savedUser = userRepository.save(userMapper.toDomain(userRequest));
+        log.info("[SaveUserUseCase] Starting user creation for email: {}", userRequest.getEmail());
+
+        User user = userMapper.toDomain(userRequest);
+
+        User savedUser = userRepository.save(user);
+        log.info("[SaveUserUseCase] User saved with id: {}", savedUser.getId());
 
         userSyncProducer.syncCreated(savedUser);
 

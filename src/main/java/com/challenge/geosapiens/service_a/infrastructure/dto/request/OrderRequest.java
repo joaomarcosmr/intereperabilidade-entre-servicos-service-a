@@ -1,5 +1,6 @@
 package com.challenge.geosapiens.service_a.infrastructure.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Data
 public class OrderRequest {
 
+    @Schema(hidden = true)
     private UUID id;
 
     @NotBlank(message = "Descrição é obrigatória")

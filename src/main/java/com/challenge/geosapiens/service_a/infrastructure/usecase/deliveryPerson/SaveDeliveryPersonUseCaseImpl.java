@@ -7,11 +7,13 @@ import com.challenge.geosapiens.service_a.infrastructure.dto.request.DeliveryPer
 import com.challenge.geosapiens.service_a.infrastructure.dto.response.DeliveryPersonResponse;
 import com.challenge.geosapiens.service_a.infrastructure.mapper.DeliveryPersonMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SaveDeliveryPersonUseCaseImpl implements SaveDeliveryPersonUseCase {
 
     private final DeliveryPersonRepository deliveryPersonRepository;
@@ -20,7 +22,13 @@ public class SaveDeliveryPersonUseCaseImpl implements SaveDeliveryPersonUseCase 
     @Override
     @Transactional
     public DeliveryPersonResponse execute(DeliveryPersonRequest deliveryPersonRequest) {
-        DeliveryPerson savedDeliveryPerson = deliveryPersonRepository.save(deliveryPersonMapper.toDomain(deliveryPersonRequest));
+        log.info("[SaveDeliveryPersonUseCase] Starting delivery person creation for name: {}", deliveryPersonRequest.getName());
+
+        DeliveryPerson deliveryPerson = deliveryPersonMapper.toDomain(deliveryPersonRequest);
+
+        DeliveryPerson savedDeliveryPerson = deliveryPersonRepository.save(deliveryPerson);
+        log.info("[SaveDeliveryPersonUseCase] Delivery person saved with id: {}", savedDeliveryPerson.getId());
+
         return deliveryPersonMapper.domainToResponse(savedDeliveryPerson);
     }
 

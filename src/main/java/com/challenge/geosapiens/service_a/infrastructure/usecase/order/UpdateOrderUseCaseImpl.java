@@ -32,6 +32,8 @@ public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
     @Override
     @Transactional
     public OrderResponse execute(OrderRequest orderRequest, UUID id) {
+        log.info("[UpdateOrderUseCase] Starting order update for id: {}", id);
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order not found with id: " + id));
 
@@ -43,6 +45,7 @@ public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
 
         orderRequest.setId(order.getId());
         Order updatedOrder = orderRepository.save(orderMapper.toDomain(orderRequest));
+        log.info("[UpdateOrderUseCase] Order updated with id: {}", updatedOrder.getId());
 
         Order orderWithRelations = orderRepository.findByIdWithRelations(updatedOrder.getId())
                 .orElseThrow(() -> new NotFoundException("Order not found after update: " + updatedOrder.getId()));

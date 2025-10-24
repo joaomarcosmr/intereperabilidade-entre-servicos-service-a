@@ -9,6 +9,7 @@ import com.challenge.geosapiens.service_a.infrastructure.dto.request.UserRequest
 import com.challenge.geosapiens.service_a.infrastructure.dto.response.UserResponse;
 import com.challenge.geosapiens.service_a.infrastructure.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateUserUseCaseImpl implements UpdateUserUseCase {
 
     private final UserRepository userRepository;
@@ -25,11 +27,14 @@ public class UpdateUserUseCaseImpl implements UpdateUserUseCase {
     @Override
     @Transactional
     public UserResponse execute(UserRequest userRequest, UUID id) {
+        log.info("[UpdateUserUseCase] Starting user update for id: {}", id);
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         userRequest.setId(user.getId());
         User updatedUser = userRepository.save(userMapper.toDomain(userRequest));
+        log.info("[UpdateUserUseCase] User updated with id: {}", updatedUser.getId());
 
         userSyncProducer.syncUpdated(updatedUser);
 

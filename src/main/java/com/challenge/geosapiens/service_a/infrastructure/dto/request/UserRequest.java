@@ -1,5 +1,6 @@
 package com.challenge.geosapiens.service_a.infrastructure.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -9,6 +10,7 @@ import java.util.UUID;
 @Data
 public class UserRequest {
 
+    @Schema(hidden = true)
     private UUID id;
 
     @NotBlank(message = "Nome é obrigatório")
