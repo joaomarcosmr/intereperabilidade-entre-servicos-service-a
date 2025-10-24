@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "service-b", url = "${service-b.url:http://localhost:8082}")
-public interface ServiceBClient {
+public interface ServiceCClient {
 
     // User endpoints
     @PostMapping("/api/users")

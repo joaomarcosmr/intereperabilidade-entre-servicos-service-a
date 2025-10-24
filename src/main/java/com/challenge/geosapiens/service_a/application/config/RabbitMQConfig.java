@@ -13,7 +13,6 @@ public class RabbitMQConfig {
 
     public static final String ORDER_EXCHANGE = "order.exchange";
     public static final String USER_EXCHANGE = "user.exchange";
-    public static final String DELIVERY_PERSON_EXCHANGE = "delivery-person.exchange";
 
     public static final String ORDER_CREATE_QUEUE = "order.create.queue";
     public static final String ORDER_UPDATE_QUEUE = "order.update.queue";
@@ -23,10 +22,6 @@ public class RabbitMQConfig {
     public static final String USER_UPDATE_QUEUE = "user.update.queue";
     public static final String USER_DELETE_QUEUE = "user.delete.queue";
 
-    public static final String DELIVERY_PERSON_CREATE_QUEUE = "delivery-person.create.queue";
-    public static final String DELIVERY_PERSON_UPDATE_QUEUE = "delivery-person.update.queue";
-    public static final String DELIVERY_PERSON_DELETE_QUEUE = "delivery-person.delete.queue";
-
     public static final String ORDER_CREATE_ROUTING_KEY = "order.create";
     public static final String ORDER_UPDATE_ROUTING_KEY = "order.update";
     public static final String ORDER_DELETE_ROUTING_KEY = "order.delete";
@@ -35,28 +30,19 @@ public class RabbitMQConfig {
     public static final String USER_UPDATE_ROUTING_KEY = "user.update";
     public static final String USER_DELETE_ROUTING_KEY = "user.delete";
 
-    public static final String DELIVERY_PERSON_CREATE_ROUTING_KEY = "delivery-person.create";
-    public static final String DELIVERY_PERSON_UPDATE_ROUTING_KEY = "delivery-person.update";
-    public static final String DELIVERY_PERSON_DELETE_ROUTING_KEY = "delivery-person.delete";
-
     public static final String ORDER_DLQ = "order.dlq";
     public static final String USER_DLQ = "user.dlq";
-    public static final String DELIVERY_PERSON_DLQ = "delivery-person.dlq";
 
     public static final String ORDER_DLX = "order.dlx";
     public static final String USER_DLX = "user.dlx";
-    public static final String DELIVERY_PERSON_DLX = "delivery-person.dlx";
 
     public static final String ORDER_RETRY_QUEUE = "order.retry.queue";
     public static final String USER_RETRY_QUEUE = "user.retry.queue";
-    public static final String DELIVERY_PERSON_RETRY_QUEUE = "delivery-person.retry.queue";
 
     public static final String ORDER_RETRY_EXCHANGE = "order.retry.exchange";
     public static final String USER_RETRY_EXCHANGE = "user.retry.exchange";
-    public static final String DELIVERY_PERSON_RETRY_EXCHANGE = "delivery-person.retry.exchange";
 
-    public static final int MAX_RETRY_ATTEMPTS = 3;
-    public static final int RETRY_DELAY_MS = 5000; // 5 seconds
+    public static final int RETRY_DELAY_MS = 5000;
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
@@ -137,7 +123,6 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(orderDLQ()).to(orderDLX()).with("order.#");
     }
 
-    // Order Retry Configuration
     @Bean
     public DirectExchange orderRetryExchange() {
         return new DirectExchange(ORDER_RETRY_EXCHANGE);
@@ -215,7 +200,6 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(userDLQ()).to(userDLX()).with("user.#");
     }
 
-    // User Retry Configuration
     @Bean
     public DirectExchange userRetryExchange() {
         return new DirectExchange(USER_RETRY_EXCHANGE);
@@ -232,83 +216,5 @@ public class RabbitMQConfig {
     @Bean
     public Binding userRetryBinding() {
         return BindingBuilder.bind(userRetryQueue()).to(userRetryExchange()).with("user.#");
-    }
-
-    @Bean
-    public TopicExchange deliveryPersonExchange() {
-        return new TopicExchange(DELIVERY_PERSON_EXCHANGE);
-    }
-
-    @Bean
-    public TopicExchange deliveryPersonDLX() {
-        return new TopicExchange(DELIVERY_PERSON_DLX);
-    }
-
-    @Bean
-    public Queue deliveryPersonDLQ() {
-        return QueueBuilder.durable(DELIVERY_PERSON_DLQ).build();
-    }
-
-    @Bean
-    public Queue deliveryPersonCreateQueue() {
-        return QueueBuilder.durable(DELIVERY_PERSON_CREATE_QUEUE)
-                .withArgument("x-dead-letter-exchange", DELIVERY_PERSON_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "delivery-person.create.retry")
-                .build();
-    }
-
-    @Bean
-    public Queue deliveryPersonUpdateQueue() {
-        return QueueBuilder.durable(DELIVERY_PERSON_UPDATE_QUEUE)
-                .withArgument("x-dead-letter-exchange", DELIVERY_PERSON_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "delivery-person.update.retry")
-                .build();
-    }
-
-    @Bean
-    public Queue deliveryPersonDeleteQueue() {
-        return QueueBuilder.durable(DELIVERY_PERSON_DELETE_QUEUE)
-                .withArgument("x-dead-letter-exchange", DELIVERY_PERSON_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "delivery-person.delete.retry")
-                .build();
-    }
-
-    @Bean
-    public Binding deliveryPersonCreateBinding() {
-        return BindingBuilder.bind(deliveryPersonCreateQueue()).to(deliveryPersonExchange()).with(DELIVERY_PERSON_CREATE_ROUTING_KEY);
-    }
-
-    @Bean
-    public Binding deliveryPersonUpdateBinding() {
-        return BindingBuilder.bind(deliveryPersonUpdateQueue()).to(deliveryPersonExchange()).with(DELIVERY_PERSON_UPDATE_ROUTING_KEY);
-    }
-
-    @Bean
-    public Binding deliveryPersonDeleteBinding() {
-        return BindingBuilder.bind(deliveryPersonDeleteQueue()).to(deliveryPersonExchange()).with(DELIVERY_PERSON_DELETE_ROUTING_KEY);
-    }
-
-    @Bean
-    public Binding deliveryPersonDLQBinding() {
-        return BindingBuilder.bind(deliveryPersonDLQ()).to(deliveryPersonDLX()).with("delivery-person.#");
-    }
-
-    // DeliveryPerson Retry Configuration
-    @Bean
-    public DirectExchange deliveryPersonRetryExchange() {
-        return new DirectExchange(DELIVERY_PERSON_RETRY_EXCHANGE);
-    }
-
-    @Bean
-    public Queue deliveryPersonRetryQueue() {
-        return QueueBuilder.durable(DELIVERY_PERSON_RETRY_QUEUE)
-                .withArgument("x-message-ttl", RETRY_DELAY_MS)
-                .withArgument("x-dead-letter-exchange", DELIVERY_PERSON_EXCHANGE)
-                .build();
-    }
-
-    @Bean
-    public Binding deliveryPersonRetryBinding() {
-        return BindingBuilder.bind(deliveryPersonRetryQueue()).to(deliveryPersonRetryExchange()).with("delivery-person.#");
     }
 }

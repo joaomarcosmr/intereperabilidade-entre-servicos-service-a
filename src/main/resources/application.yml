@@ -30,3 +30,16 @@ spring:
 
 server:
   port: 8080
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
+      service-b:
+        connectTimeout: 3000
+        readTimeout: 8000
+
+service-b:
+  url: http://localhost:8082

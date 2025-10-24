@@ -3,7 +3,6 @@ package com.challenge.geosapiens.service_a.infrastructure.usecase.deliveryPerson
 import com.challenge.geosapiens.service_a.application.exception.NotFoundException;
 import com.challenge.geosapiens.service_a.domain.entity.DeliveryPerson;
 import com.challenge.geosapiens.service_a.domain.repository.DeliveryPersonRepository;
-import com.challenge.geosapiens.service_a.domain.producer.DeliveryPersonSyncProducer;
 import com.challenge.geosapiens.service_a.domain.usecase.deliveryPerson.UpdateDeliveryPersonUseCase;
 import com.challenge.geosapiens.service_a.infrastructure.dto.request.DeliveryPersonRequest;
 import com.challenge.geosapiens.service_a.infrastructure.dto.response.DeliveryPersonResponse;
@@ -20,7 +19,6 @@ public class UpdateDeliveryPersonUseCaseImpl implements UpdateDeliveryPersonUseC
 
     private final DeliveryPersonRepository deliveryPersonRepository;
     private final DeliveryPersonMapper deliveryPersonMapper;
-    private final DeliveryPersonSyncProducer deliveryPersonSyncProducer;
 
     @Override
     @Transactional
@@ -32,9 +30,6 @@ public class UpdateDeliveryPersonUseCaseImpl implements UpdateDeliveryPersonUseC
         deliveryPerson.setPhone(deliveryPersonRequest.getPhone());
 
         DeliveryPerson updatedDeliveryPerson = deliveryPersonRepository.save(deliveryPerson);
-
-        deliveryPersonSyncProducer.syncUpdated(updatedDeliveryPerson);
-
         return deliveryPersonMapper.domainToResponse(updatedDeliveryPerson);
     }
 

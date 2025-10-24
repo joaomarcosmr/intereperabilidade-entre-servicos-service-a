@@ -33,7 +33,6 @@ public class SaveOrderUseCaseImpl implements SaveOrderUseCase {
     public OrderResponse execute(OrderRequest orderRequest) {
         Order order = orderMapper.toDomain(orderRequest);
 
-        // Busca e seta os relacionamentos
         order.setDeliveryPerson(deliveryPersonRepository.findById(orderRequest.getDeliveryPersonId())
                 .orElseThrow(() -> new NotFoundException("DeliveryPerson not found with id: " + orderRequest.getDeliveryPersonId())));
 
@@ -41,12 +40,9 @@ public class SaveOrderUseCaseImpl implements SaveOrderUseCase {
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + orderRequest.getUserId())));
 
         Order savedOrder = orderRepository.save(order);
-        log.debug("Saved order with id: {}, deliveryPerson: {}", savedOrder.getId(), savedOrder.getDeliveryPerson());
 
         Order orderWithRelations = orderRepository.findByIdWithRelations(savedOrder.getId())
                 .orElseThrow(() -> new NotFoundException("Order not found after save: " + savedOrder.getId()));
-
-        log.debug("Order for sync - deliveryPerson: {}", orderWithRelations.getDeliveryPerson());
 
         orderSyncProducer.syncCreated(orderWithRelations);
 
