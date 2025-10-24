@@ -4,8 +4,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class UserRequest {
+
+    private UUID id;
 
     @NotBlank(message = "Nome é obrigatório")
     private String name;

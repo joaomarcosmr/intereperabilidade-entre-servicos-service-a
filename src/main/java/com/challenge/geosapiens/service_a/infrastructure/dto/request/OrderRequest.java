@@ -10,6 +10,8 @@ import java.util.UUID;
 @Data
 public class OrderRequest {
 
+    private UUID id;
+
     @NotBlank(message = "Descrição é obrigatória")
     private String description;
 

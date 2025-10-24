@@ -6,9 +6,14 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.rabbit.retry.RepublishMessageRecoverer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 @EnableRabbit
@@ -39,14 +44,6 @@ public class RabbitMQConfig {
     public static final String ORDER_DLX = "order.dlx";
     public static final String USER_DLX = "user.dlx";
 
-    public static final String ORDER_RETRY_QUEUE = "order.retry.queue";
-    public static final String USER_RETRY_QUEUE = "user.retry.queue";
-
-    public static final String ORDER_RETRY_EXCHANGE = "order.retry.exchange";
-    public static final String USER_RETRY_EXCHANGE = "user.retry.exchange";
-
-    public static final int RETRY_DELAY_MS = 5000;
-
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
@@ -60,10 +57,42 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+    public MessageRecoverer messageRecoverer(RabbitTemplate rabbitTemplate) {
+        return new RepublishMessageRecoverer(
+                rabbitTemplate,
+                "",
+                ""
+        ) {
+            protected void send(String exchange, String routingKey, Message message) {
+                throw new RuntimeException("Retries exhausted - message will be sent to DLX");
+            }
+        };
+    }
+
+    @Bean
+    public RetryTemplate retryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+        retryPolicy.setMaxAttempts(3);
+        retryTemplate.setRetryPolicy(retryPolicy);
+
+        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        backOffPolicy.setBackOffPeriod(2000);
+        retryTemplate.setBackOffPolicy(backOffPolicy);
+
+        return retryTemplate;
+    }
+
+    @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+            ConnectionFactory connectionFactory,
+            RetryTemplate retryTemplate) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(messageConverter());
+        factory.setRetryTemplate(retryTemplate);
+        factory.setDefaultRequeueRejected(true);
         return factory;
     }
 
@@ -92,24 +121,24 @@ public class RabbitMQConfig {
     @Bean
     public Queue orderCreateQueue() {
         return QueueBuilder.durable(ORDER_CREATE_QUEUE)
-                .withArgument("x-dead-letter-exchange", ORDER_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "order.create.retry")
+                .withArgument("x-dead-letter-exchange", ORDER_DLX)
+                .withArgument("x-dead-letter-routing-key", "order.create.dlq")
                 .build();
     }
 
     @Bean
     public Queue orderUpdateQueue() {
         return QueueBuilder.durable(ORDER_UPDATE_QUEUE)
-                .withArgument("x-dead-letter-exchange", ORDER_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "order.update.retry")
+                .withArgument("x-dead-letter-exchange", ORDER_DLX)
+                .withArgument("x-dead-letter-routing-key", "order.update.dlq")
                 .build();
     }
 
     @Bean
     public Queue orderDeleteQueue() {
         return QueueBuilder.durable(ORDER_DELETE_QUEUE)
-                .withArgument("x-dead-letter-exchange", ORDER_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "order.delete.retry")
+                .withArgument("x-dead-letter-exchange", ORDER_DLX)
+                .withArgument("x-dead-letter-routing-key", "order.delete.dlq")
                 .build();
     }
 
@@ -134,24 +163,6 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public DirectExchange orderRetryExchange() {
-        return new DirectExchange(ORDER_RETRY_EXCHANGE);
-    }
-
-    @Bean
-    public Queue orderRetryQueue() {
-        return QueueBuilder.durable(ORDER_RETRY_QUEUE)
-                .withArgument("x-message-ttl", RETRY_DELAY_MS)
-                .withArgument("x-dead-letter-exchange", ORDER_EXCHANGE)
-                .build();
-    }
-
-    @Bean
-    public Binding orderRetryBinding() {
-        return BindingBuilder.bind(orderRetryQueue()).to(orderRetryExchange()).with("order.#");
-    }
-
-    @Bean
     public TopicExchange userExchange() {
         return new TopicExchange(USER_EXCHANGE);
     }
@@ -169,24 +180,24 @@ public class RabbitMQConfig {
     @Bean
     public Queue userCreateQueue() {
         return QueueBuilder.durable(USER_CREATE_QUEUE)
-                .withArgument("x-dead-letter-exchange", USER_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "user.create.retry")
+                .withArgument("x-dead-letter-exchange", USER_DLX)
+                .withArgument("x-dead-letter-routing-key", "user.create.dlq")
                 .build();
     }
 
     @Bean
     public Queue userUpdateQueue() {
         return QueueBuilder.durable(USER_UPDATE_QUEUE)
-                .withArgument("x-dead-letter-exchange", USER_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "user.update.retry")
+                .withArgument("x-dead-letter-exchange", USER_DLX)
+                .withArgument("x-dead-letter-routing-key", "user.update.dlq")
                 .build();
     }
 
     @Bean
     public Queue userDeleteQueue() {
         return QueueBuilder.durable(USER_DELETE_QUEUE)
-                .withArgument("x-dead-letter-exchange", USER_RETRY_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", "user.delete.retry")
+                .withArgument("x-dead-letter-exchange", USER_DLX)
+                .withArgument("x-dead-letter-routing-key", "user.delete.dlq")
                 .build();
     }
 
@@ -208,23 +219,5 @@ public class RabbitMQConfig {
     @Bean
     public Binding userDLQBinding() {
         return BindingBuilder.bind(userDLQ()).to(userDLX()).with("user.#");
-    }
-
-    @Bean
-    public DirectExchange userRetryExchange() {
-        return new DirectExchange(USER_RETRY_EXCHANGE);
-    }
-
-    @Bean
-    public Queue userRetryQueue() {
-        return QueueBuilder.durable(USER_RETRY_QUEUE)
-                .withArgument("x-message-ttl", RETRY_DELAY_MS)
-                .withArgument("x-dead-letter-exchange", USER_EXCHANGE)
-                .build();
-    }
-
-    @Bean
-    public Binding userRetryBinding() {
-        return BindingBuilder.bind(userRetryQueue()).to(userRetryExchange()).with("user.#");
     }
 }

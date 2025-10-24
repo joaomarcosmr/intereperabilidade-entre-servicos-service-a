@@ -33,7 +33,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     private ResponseEntity<OrderResponse> update(
             @Valid @RequestBody OrderRequest orderRequest,
-            @RequestParam(name = "orderId", required = true) UUID id
+            @PathVariable UUID id
     ) {
         OrderResponse execute = updateOrderUseCase.execute(orderRequest, id);
         return ResponseEntity.status(HttpStatus.OK).body(execute);
@@ -41,7 +41,7 @@ public class OrderController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    private ResponseEntity<Void> delete(@RequestParam(name = "orderId", required = true) UUID id) {
+    private ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteOrderUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }

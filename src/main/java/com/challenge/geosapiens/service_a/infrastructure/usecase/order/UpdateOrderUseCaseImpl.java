@@ -28,7 +28,6 @@ public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
     private final UserRepository userRepository;
     private final OrderMapper orderMapper;
     private final OrderSyncProducer orderSyncProducer;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -36,28 +35,17 @@ public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order not found with id: " + id));
 
-        order.setDescription(orderRequest.getDescription());
-        order.setValue(orderRequest.getValue());
-
-        // Busca e seta os relacionamentos
         order.setDeliveryPerson(deliveryPersonRepository.findById(orderRequest.getDeliveryPersonId())
                 .orElseThrow(() -> new NotFoundException("DeliveryPerson not found with id: " + orderRequest.getDeliveryPersonId())));
 
         order.setUser(userRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + orderRequest.getUserId())));
 
-        Order updatedOrder = orderRepository.save(order);
-        log.debug("Updated order with id: {}, deliveryPerson: {}", updatedOrder.getId(), updatedOrder.getDeliveryPerson());
+        orderRequest.setId(order.getId());
+        Order updatedOrder = orderRepository.save(orderMapper.toDomain(orderRequest));
 
-        // Flush para garantir que está no banco
-        entityManager.flush();
-
-        // Busca novamente com os relacionamentos
         Order orderWithRelations = orderRepository.findByIdWithRelations(updatedOrder.getId())
                 .orElseThrow(() -> new NotFoundException("Order not found after update: " + updatedOrder.getId()));
-
-        log.debug("Order for sync - deliveryPerson: {}", orderWithRelations.getDeliveryPerson());
-
         orderSyncProducer.syncUpdated(orderWithRelations);
 
         return orderMapper.domainToResponse(updatedOrder);

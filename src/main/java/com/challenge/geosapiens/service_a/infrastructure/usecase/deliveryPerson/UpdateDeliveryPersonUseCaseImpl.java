@@ -26,10 +26,8 @@ public class UpdateDeliveryPersonUseCaseImpl implements UpdateDeliveryPersonUseC
         DeliveryPerson deliveryPerson = deliveryPersonRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("DeliveryPerson not found with id: " + id));
 
-        deliveryPerson.setName(deliveryPersonRequest.getName());
-        deliveryPerson.setPhone(deliveryPersonRequest.getPhone());
-
-        DeliveryPerson updatedDeliveryPerson = deliveryPersonRepository.save(deliveryPerson);
+        deliveryPersonRequest.setId(deliveryPerson.getId());
+        DeliveryPerson updatedDeliveryPerson = deliveryPersonRepository.save(deliveryPersonMapper.toDomain(deliveryPersonRequest));
         return deliveryPersonMapper.domainToResponse(updatedDeliveryPerson);
     }
 

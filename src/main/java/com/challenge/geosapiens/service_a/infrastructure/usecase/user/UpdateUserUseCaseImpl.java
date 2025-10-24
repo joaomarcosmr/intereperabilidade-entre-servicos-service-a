@@ -28,10 +28,8 @@ public class UpdateUserUseCaseImpl implements UpdateUserUseCase {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
-        user.setName(userRequest.getName());
-        user.setEmail(userRequest.getEmail());
-
-        User updatedUser = userRepository.save(user);
+        userRequest.setId(user.getId());
+        User updatedUser = userRepository.save(userMapper.toDomain(userRequest));
 
         userSyncProducer.syncUpdated(updatedUser);
 

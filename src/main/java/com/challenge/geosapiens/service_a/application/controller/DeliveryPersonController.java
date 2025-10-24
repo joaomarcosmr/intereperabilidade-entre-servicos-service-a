@@ -33,7 +33,7 @@ public class DeliveryPersonController {
     @ResponseStatus(HttpStatus.OK)
     private ResponseEntity<DeliveryPersonResponse> update(
             @Valid @RequestBody DeliveryPersonRequest deliveryPersonRequest,
-            @RequestParam(name = "deliveryPersonId", required = true) UUID id
+            @PathVariable UUID id
     ) {
         DeliveryPersonResponse execute = updateDeliveryPersonUseCase.execute(deliveryPersonRequest, id);
         return ResponseEntity.status(HttpStatus.OK).body(execute);
@@ -41,7 +41,7 @@ public class DeliveryPersonController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    private ResponseEntity<Void> delete(@RequestParam(name = "deliveryPersonId", required = true) UUID id) {
+    private ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteDeliveryPersonUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
