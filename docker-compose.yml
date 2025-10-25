@@ -41,7 +41,7 @@ services:
 
   service-a:
     build: .
-    container_name: service-a-app
+    container_name: service-a
     ports:
       - "8080:8080"
     environment:
@@ -73,4 +73,4 @@ volumes:
 
 networks:
   geosapiens:
-    driver: bridge
+    external: true
